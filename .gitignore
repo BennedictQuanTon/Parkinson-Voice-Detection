@@ -1,0 +1,31 @@
+# --- Data: NEVER commit ---
+# IPVS directory names are real participant names and filenames encode birth
+# year, sex and exact recording timestamp. Combined with the diagnostic label
+# this is identifiable health data, regardless of the CC BY 4.0 licence.
+data/
+*.wav
+*.WAV
+
+# Figures and results ARE committed: they are the deliverable, they are small
+# (3 MB), and tests/test_no_leakage.py asserts they carry no participant name.
+
+# --- Caches ---
+.cache/
+.mplcache/
+mlruns/
+
+# --- Python ---
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+# Notebooks are paired with .py via jupytext. Both are committed; the .ipynb
+# carries executed outputs so the results are readable without the corpus.
+
+# --- macOS ---
+.DS_Store

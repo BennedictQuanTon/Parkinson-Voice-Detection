@@ -1,0 +1,1 @@
+Per-fold optimism, out-of-bag error against forest size, and a learning curve whose x axis counts participants rather than recordings. MFCC is already saturated with twelve training participants.

@@ -1,0 +1,1 @@
+Summary. Under a correct participant-level split on a single-sample-rate cohort, a model given only non-speech audio matches models given speech, and a recording-level split reports AUROC 0.88 for randomly assigned labels.

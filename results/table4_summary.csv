@@ -1,0 +1,9 @@
+quantity,value
+Participants (PD / eHC),25 / 22
+Directories mistaken for participants,28 / 22
+"Silence-only AUROC, correct split, batch-matched",1.000
+"MFCC AUROC, correct split, batch-matched",1.000
+Channel-statistics-only AUROC,0.897
+Age+sex-only AUROC,0.618
+"Permutation null, correct split",0.447
+"Permutation null, recording-level split",0.882
