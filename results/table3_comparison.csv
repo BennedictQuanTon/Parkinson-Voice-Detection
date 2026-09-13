@@ -1,0 +1,6 @@
+study,corpus,participants,split,features,model,reported,negative controls
+Klempir et al. 2024 (Sensors 24:5520),IPVS (Italian),28 PD / 22 HC (as described),5-fold CV; grouping not stated,MFCC + prosody,random forest,accuracy 0.85-0.95,none reported
+"This work, arm A (recording-level split)","IPVS, read passage",46 total,"recording-level, 5x5 CV",MFCC (40),random forest (100),AUROC 1.000,fail
+"This work, arm C (participant-level split)","IPVS, read passage",46 total,"participant-level, 5x5 CV",MFCC (40),random forest (100),"AUROC 0.987 [0.948, 1.000]",fail
+"This work, batch-matched cohort","IPVS 2017 only, 16 kHz",39 total,"participant-level, 5x5 CV",MFCC (40),random forest (100),"AUROC 1.000 [1.000, 1.000]",fail
+"This work, SILENCE ONLY (control)","IPVS 2017 only, 16 kHz",39 total,"participant-level, 5x5 CV",MFCC of non-speech regions,random forest (100),"AUROC 1.000 [1.000, 1.000]",this IS the control

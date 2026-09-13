@@ -1,0 +1,1 @@
+Negative controls. Demographics sit near chance and the permutation null is correctly centred under the participant-level split. Two results are not as expected: silence containing no speech reaches AUROC 1.000, and the permutation null under a recording-level split rises to 0.88.

@@ -1,0 +1,1 @@
+The 2016 campaign recorded patients only, at 44.1 kHz; the 2017 campaign recorded the remaining patients and all controls at 16 kHz. Sample rate alone reaches participant-level AUROC 0.70.

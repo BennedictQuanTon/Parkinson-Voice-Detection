@@ -1,0 +1,5 @@
+# Notebooks are paired across two directories:
+#   notebooks/  executed .ipynb, for reading and for running cell by cell
+#   scripts/    .py in percent format, for review, diffs and `make all`
+# Editing either side and running `jupytext --sync` updates the other.
+formats = "notebooks//ipynb,scripts//py:percent"

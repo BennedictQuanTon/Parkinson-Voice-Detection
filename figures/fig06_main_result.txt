@@ -1,0 +1,1 @@
+Participant-level AUROC on the read passage. A model given only the non-speech portions of the recordings performs as well as one given the speech, on both cohorts and under all three split schemes.
