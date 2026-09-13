@@ -140,11 +140,116 @@ def channel_features(path: str | Path, top_db: int = 30) -> dict[str, float] | N
     }
 
 
+def tier_a_features(path: str | Path) -> dict[str, float] | None:
+    """Tier A: Physiological, perturbation, and ratio-based features via Parselmouth/Praat.
+
+    Ratios cancel multiplicative channel gain; timing/pause measures are immune
+    to spectral tilt.
+    """
+    import parselmouth
+    from . import normalize as N
+
+    try:
+        sound = parselmouth.Sound(str(path))
+    except Exception:
+        return None
+
+    duration = sound.get_total_duration()
+    if duration < 0.3:
+        return None
+
+    # Pitch / F0
+    pitch = sound.to_pitch(time_step=0.01, pitch_floor=75.0, pitch_ceiling=600.0)
+    f0_vals = pitch.selected_array["frequency"]
+    f0_voiced = f0_vals[f0_vals > 0]
+
+    if len(f0_voiced) < 5:
+        return None
+
+    f0_mean = float(np.mean(f0_voiced))
+    f0_std = float(np.std(f0_voiced))
+    f0_min = float(np.min(f0_voiced))
+    f0_max = float(np.max(f0_voiced))
+    f0_range = float(f0_max - f0_min)
+
+    # PointProcess for perturbation
+    point_process = parselmouth.praat.call(sound, "To PointProcess (periodic, cc)", 75.0, 600.0)
+    jitter_local = float(parselmouth.praat.call(point_process, "Get jitter (local)", 0.0, 0.0, 0.0001, 0.02, 1.3))
+    jitter_rap = float(parselmouth.praat.call(point_process, "Get jitter (rap)", 0.0, 0.0, 0.0001, 0.02, 1.3))
+    jitter_ppq5 = float(parselmouth.praat.call(point_process, "Get jitter (ppq5)", 0.0, 0.0, 0.0001, 0.02, 1.3))
+
+    shimmer_local = float(parselmouth.praat.call([sound, point_process], "Get shimmer (local)", 0.0, 0.0, 0.0001, 0.02, 1.3, 1.6))
+    shimmer_apq3 = float(parselmouth.praat.call([sound, point_process], "Get shimmer (apq3)", 0.0, 0.0, 0.0001, 0.02, 1.3, 1.6))
+    shimmer_apq5 = float(parselmouth.praat.call([sound, point_process], "Get shimmer (apq5)", 0.0, 0.0, 0.0001, 0.02, 1.3, 1.6))
+
+    # Harmonics-to-Noise Ratio (HNR)
+    harmonicity = sound.to_harmonicity(time_step=0.01, minimum_pitch=75.0)
+    hnr_mean = float(parselmouth.praat.call(harmonicity, "Get mean", 0.0, 0.0))
+
+    # Timing & Pause measures via librosa
+    signal = load_audio(path)
+    intervals = librosa.effects.split(signal, top_db=30)
+    speech_len = sum(end - start for start, end in intervals) / SAMPLE_RATE
+    pause_len = max(0.0, duration - speech_len)
+    pause_count = max(0, len(intervals) - 1)
+    mean_pause_dur = (pause_len / pause_count) if pause_count > 0 else 0.0
+    pause_ratio = pause_len / (duration + 1e-12)
+    voiced_unvoiced_ratio = len(f0_voiced) / (len(f0_vals) - len(f0_voiced) + 1e-12)
+
+    return {
+        "f0_mean": f0_mean,
+        "f0_std": f0_std,
+        "f0_min": f0_min,
+        "f0_max": f0_max,
+        "f0_range": f0_range,
+        "jitter_local": 0.0 if np.isnan(jitter_local) else jitter_local,
+        "jitter_rap": 0.0 if np.isnan(jitter_rap) else jitter_rap,
+        "jitter_ppq5": 0.0 if np.isnan(jitter_ppq5) else jitter_ppq5,
+        "shimmer_local": 0.0 if np.isnan(shimmer_local) else shimmer_local,
+        "shimmer_apq3": 0.0 if np.isnan(shimmer_apq3) else shimmer_apq3,
+        "shimmer_apq5": 0.0 if np.isnan(shimmer_apq5) else shimmer_apq5,
+        "hnr_mean": 0.0 if np.isnan(hnr_mean) else hnr_mean,
+        "duration": float(duration),
+        "speech_duration": float(speech_len),
+        "pause_duration": float(pause_len),
+        "pause_count": float(pause_count),
+        "mean_pause_dur": float(mean_pause_dur),
+        "pause_ratio": float(pause_ratio),
+        "voiced_unvoiced_ratio": float(voiced_unvoiced_ratio),
+    }
+
+
+def tier_b_features(path: str | Path) -> dict[str, float]:
+    from . import normalize as N
+    signal = load_audio(path)
+    return N.extract_cmvn_mfcc(signal, sr=SAMPLE_RATE, n_mfcc=N_MFCC)
+
+
+def f0_sex_proxy_features(path: str | Path) -> dict[str, float] | None:
+    import parselmouth
+    try:
+        sound = parselmouth.Sound(str(path))
+        pitch = sound.to_pitch(time_step=0.01, pitch_floor=75.0, pitch_ceiling=600.0)
+        f0_vals = pitch.selected_array["frequency"]
+        f0_voiced = f0_vals[f0_vals > 0]
+        if len(f0_voiced) < 5:
+            return None
+        return {
+            "f0_mean": float(np.mean(f0_voiced)),
+            "f0_std": float(np.std(f0_voiced)),
+        }
+    except Exception:
+        return None
+
+
 EXTRACTORS = {
     "mfcc": mfcc_features,
     "egemaps": egemaps_features,
     "silence": silence_features,
     "channel": channel_features,
+    "tier_a": tier_a_features,
+    "tier_b": tier_b_features,
+    "f0_sex_proxy": f0_sex_proxy_features,
 }
 
 

@@ -78,26 +78,44 @@ Young controls (45 recordings) are excluded from both; see `FINDINGS.md`.
 - no `(participant, task, repetition, session)` tuple appears twice
 - the participant key is disjoint across cross-validation folds in arm C
 
+## Corpus 2: MDVR-KCL (King's College London)
+
+Jaeger, H., Trivedi, D. & Stadtschnitzer, M. (2019). Zenodo.
+<https://doi.org/10.5281/zenodo.2867216> — CC BY 4.0.
+
+Associated publication:
+Jaeger, H. et al. (2019). "Mobile Device Voice Recordings at King's College London
+(MDVR-KCL) from both early and advanced Parkinson's disease patients and healthy controls."
+
+### Snapshot used
+
+| property | value |
+|---|---|
+| retrieved | 2026-09 |
+| archive | `26_29_09_2017_KCL.zip` (606,144,431 bytes) |
+| SHA-256 | `45c43cdfa5d078833a6ac27574c471c9ca34d4cd4dea5877f31ebe93b1b5edf6` |
+| total `.wav` files | 73 (37 ReadText, 36 SpontaneousDialogue) |
+| participants | 37 (16 PD, 21 HC) |
+| sample rate | 44.1 kHz, 16-bit PCM mono |
+| recording equipment | Motorola Moto G4 Smartphone |
+| environment | 10 m² examination room, ~500ms reverberation, single 4-day window (26-29 Sept 2017) |
+| clinical scales | Hoehn & Yahr, UPDRS II-5 (speech), UPDRS III-18 (speech) |
+
+### Filename schema
+
+Decoded in `src/corpora.py`:
+`ID{NN}_{hc|pd}_{HY}_{UPDRS_II_5}_{UPDRS_III_18}.wav` (e.g. `ID02_pd_1_2_1.wav`).
+One irregular filename observed and handled: `ID22hc_0_0_0.wav` (missing underscore).
+
 ## Privacy
 
-The corpus is CC BY 4.0, but directory names are real participant first names with
-surname initials and filenames encode birth year, sex and exact recording
-timestamp. Combined with the diagnostic label this is identifiable health data.
-
-This repository therefore:
-
-- never commits audio (`.gitignore` blocks `data/` and `*.wav`)
-- pseudonymises to `PD01`/`eHC01`/`yHC01`, ordered by a hash of the participant key
-  so the mapping does not reveal alphabetical position
-- writes `metadata_public.parquet` with name, path, directory and timestamp columns
-  removed (`src/parsing.redact`, covered by a test)
-- never writes a real name into a figure, table or log
+Neither IPVS nor MDVR-KCL raw audio is committed (`.gitignore` blocks `data/` and `*.wav`).
+Only pseudonymised derivatives (`metadata_harmonized_public.parquet`) are shared.
 
 ## Datasets not used, and why
 
 | corpus | status | reason |
 |---|---|---|
-| MDVR-KCL | not downloaded | deferred to Phase 1; single reading per participant makes it the natural replication set |
 | NeuroVoz | requires DUA | request not submitted; needs institutional affiliation |
 | EWA-DB | requires DUA | as above |
 | UCI Parkinson's telemonitoring | rejected | 188/64 subjects with a sex confound and no raw audio |

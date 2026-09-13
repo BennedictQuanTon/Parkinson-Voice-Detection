@@ -153,8 +153,8 @@ def test_committed_notebook_outputs_contain_no_real_names():
     }
     assert names, "no participant directories found"
 
-    targets = list((root / "notebooks").glob("*.ipynb"))
-    targets += list((root / "results").glob("*.csv"))
+    targets = list((root / "notebooks").rglob("*.ipynb"))
+    targets += list((root / "results").rglob("*.csv"))
     offenders = []
     for path in targets:
         text = path.read_text(errors="ignore")

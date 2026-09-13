@@ -27,6 +27,10 @@ SCHEMES: dict[str, tuple[str | None, str]] = {
         "subject_id",
         "Grouped by verified participant key",
     ),
+    "D_leave_one_corpus_out": (
+        "corpus",
+        "Leave-One-Corpus-Out (train on one corpus, test on the other)",
+    ),
 }
 
 
@@ -50,8 +54,18 @@ def iter_splits(
     seed: int = 42,
 ) -> Iterator[tuple[int, np.ndarray, np.ndarray]]:
     """Yield ``(repeat_index, train_idx, test_idx)`` for the requested arm."""
+    from sklearn.model_selection import LeaveOneGroupOut
+
     groups = get_groups(meta, arm)
     X_dummy = np.zeros((len(y), 1))
+    
+    if arm == "D_leave_one_corpus_out":
+        logo = LeaveOneGroupOut()
+        for repeat in range(n_repeats):
+            for train_idx, test_idx in logo.split(X_dummy, y, groups=groups):
+                yield repeat, train_idx, test_idx
+        return
+
     for repeat in range(n_repeats):
         rs = seed + repeat
         if groups is None:

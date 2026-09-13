@@ -1,0 +1,5 @@
+tier,Logistic_ElasticNet,Logistic_L2,RandomForest,XGBoost
+tier_a,0.611,0.489,0.314,0.488
+tier_ab,0.5,0.516,0.459,0.537
+tier_b,0.494,0.599,0.555,0.569
+tier_c,0.825,0.809,0.837,0.701

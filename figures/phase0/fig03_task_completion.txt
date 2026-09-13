@@ -1,0 +1,1 @@
+Task completion per participant. Both groups complete the protocol at comparable rates, so missingness is not usable as a shortcut to the label.
